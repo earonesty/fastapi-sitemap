@@ -1,10 +1,8 @@
 import tempfile
 from pathlib import Path
 
-import pytest
-from fastapi import FastAPI, APIRouter, Depends
+from fastapi import APIRouter, Depends, FastAPI
 from fastapi.testclient import TestClient
-from fastapi.routing import APIRoute
 
 from fastapi_sitemap import SiteMap, URLInfo
 
@@ -70,11 +68,11 @@ def test_generate_files_gzip(tmp_path: Path):
 def test_source_decorator():
     app = FastAPI()
     sm = SiteMap(app=app, base_url="https://example.com")
-    
+
     @sm.source
     def extra_urls():
         yield URLInfo("https://example.com/extra")
-    
+
     urls = list(sm._collect_urls())
     assert any(url.loc == "https://example.com/extra" for url in urls)
 
@@ -82,26 +80,23 @@ def test_source_decorator():
 def test_source_decorator_multiple():
     app = FastAPI()
     sm = SiteMap(app=app, base_url="https://example.com")
-    
+
     @sm.source
     def extra_urls():
         yield URLInfo("https://example.com/extra")
         yield URLInfo(
-            "https://example.com/priority",
-            changefreq="daily",
-            priority=0.8,
-            lastmod="2024-01-01"
+            "https://example.com/priority", changefreq="daily", priority=0.8, lastmod="2024-01-01"
         )
-    
+
     @sm.source
     def more_urls():
         yield URLInfo("https://example.com/more")
-    
+
     urls = list(sm._collect_urls())
     assert len(urls) == 3
     assert any(url.loc == "https://example.com/extra" for url in urls)
     assert any(url.loc == "https://example.com/more" for url in urls)
-    
+
     priority_url = next(url for url in urls if url.loc == "https://example.com/priority")
     assert priority_url.changefreq == "daily"
     assert priority_url.priority == 0.8
@@ -185,6 +180,6 @@ def test_route_filtering():
     @router.post("/post-only")
     async def post_only():
         return {"post": True}
-    
+
     urls = list(sm._collect_urls())
     assert not any("/post-only" in url.loc for url in urls)

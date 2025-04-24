@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import re
 import gzip
 import logging
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Optional, Sequence, Set
@@ -12,6 +12,7 @@ from fastapi import APIRouter, FastAPI, Response
 from fastapi.routing import APIRoute
 
 log = logging.getLogger(__name__)
+
 
 # Public data class
 class URLInfo:  # pragma: no cover
@@ -81,9 +82,7 @@ class SiteMap:
         self._extra_sources: List[Callable[[], Iterable[URLInfo]]] = []
 
     # ---------- public API ----------
-    def source(
-        self, fn: Callable[[], Iterable[URLInfo]]
-    ) -> Callable[[], Iterable[URLInfo]]:
+    def source(self, fn: Callable[[], Iterable[URLInfo]]) -> Callable[[], Iterable[URLInfo]]:
         """Register *fn* as an additional URL generator.
 
         `fn()` must yield or return an iterable of URLInfo objects.

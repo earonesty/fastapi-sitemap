@@ -1,6 +1,7 @@
 import argparse
 import importlib
 from pathlib import Path
+
 from fastapi_sitemap import SiteMap
 
 
@@ -26,7 +27,9 @@ def _write_stub(target: Path, dotted_app: str, base_url: str, exclude_patterns: 
     print(f"Stub written -> {target}")
 
 
-def _load_sitemap(config: str | None, dotted_app: str | None, exclude_patterns: list[str], base_url: str) -> SiteMap:
+def _load_sitemap(
+    config: str | None, dotted_app: str | None, exclude_patterns: list[str], base_url: str
+) -> SiteMap:
     if config:
         spec = importlib.util.spec_from_file_location("sitemap_config", config)
         mod = importlib.util.module_from_spec(spec)
@@ -53,13 +56,20 @@ def main(argv=None):
     def common_args(p: argparse.ArgumentParser):
         p.add_argument("--app", "-a", help="module.sub:app")
         p.add_argument("--base_url", "-u", help="canonical site URL")
-        p.add_argument("--exclude-patterns", "-e", nargs="+", help="exclude patterns", default=[
-            "^/api/",
-            "^/docs/",
-            "^/favicon\\.ico$",
-            "^/robots\\.txt$",
-        ])
+        p.add_argument(
+            "--exclude-patterns",
+            "-e",
+            nargs="+",
+            help="exclude patterns",
+            default=[
+                "^/api/",
+                "^/docs/",
+                "^/favicon\\.ico$",
+                "^/robots\\.txt$",
+            ],
+        )
         return p
+
     init_p = sub.add_parser("init", help="create sitemap_config.py stub")
     common_args(init_p)
     init_p.add_argument("--out", "-o", default="sitemap_config.py")
