@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastapi-sitemap"
-version = "0.1.0"
+version = "1.0.1"
 description = "Zero‑config sitemap generator & route for FastAPI / Starlette apps"
 authors = ["Erik Aronesty <erik@example.com>"]
 license = "MIT"
