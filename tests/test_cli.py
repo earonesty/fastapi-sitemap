@@ -22,7 +22,7 @@ async def index():
 sitemap = SiteMap(
     app=app,
     base_url="https://example.com",
-    gzip_output={gzip},
+    gzip={gzip},
 )
 """
     )

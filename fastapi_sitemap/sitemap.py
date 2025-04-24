@@ -59,7 +59,7 @@ class SiteMap:
         include_dynamic: bool = False,
         changefreq: str | None = "weekly",
         priority_map: Dict[str, float] | None = None,
-        gzip_output: bool = False,
+        gzip: bool = False,
     ) -> None:
         self.app = app
         self.base_url = base_url.rstrip("/")
@@ -77,7 +77,7 @@ class SiteMap:
         self.include_dynamic = include_dynamic
         self.default_changefreq = changefreq
         self.priority_map = priority_map or {}
-        self.gzip_output = gzip_output
+        self.gzip = gzip
 
         self._extra_sources: List[Callable[[], Iterable[URLInfo]]] = []
 
@@ -94,13 +94,22 @@ class SiteMap:
         """Register a GET endpoint that returns the generated sitemap."""
 
         sitemap_xml = self._build_xml(list(self._collect_urls()))
-        payload = gzip.compress(sitemap_xml) if self.gzip_output else sitemap_xml
-        media_type = "application/gzip" if self.gzip_output else "application/xml"
 
         async def _serve():
-            return Response(payload, media_type=media_type)
+            return Response(sitemap_xml, media_type="application/xml")
 
         self.app.add_api_route(route, _serve, methods=["GET"], include_in_schema=False)
+
+        if self.gzip:
+            payload = gzip.compress(sitemap_xml)
+            gzipped_route = route + ".gz"
+
+            def _serve_gzipped():
+                return Response(payload, media_type="application/gzip")
+
+            self.app.add_api_route(
+                gzipped_route, _serve_gzipped, methods=["GET"], include_in_schema=False
+            )
         log.info("fastapi-sitemap attached at %s", route)
 
     def generate(self, out_dir: str | Path) -> List[Path]:
@@ -115,7 +124,7 @@ class SiteMap:
         xml_file.write_bytes(xml_bytes)
         filenames.append(xml_file)
 
-        if self.gzip_output:
+        if self.gzip:
             gz_file = out_path / "sitemap.xml.gz"
             gz_file.write_bytes(gzip.compress(xml_bytes))
             filenames.append(gz_file)

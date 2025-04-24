@@ -14,7 +14,7 @@ sitemap = SiteMap(
     app=app,
     base_url="https://example.com",
     exclude_patterns=["^/api/", "^/docs/"],  # optional: exclude patterns
-    gzip_output=True,  # optional: enable gzip compression
+    gzip=True,  # optional: make a gz version too
 )
 sitemap.attach()  # now GET /sitemap.xml is live
 ```
@@ -60,7 +60,7 @@ python -m fastapi_sitemap.cli generate -a myapp.main:app -u https://example.com 
 - `include_dynamic`: Whether to include dynamic routes (default: False)
 - `changefreq`: Default change frequency for URLs (default: "weekly")
 - `priority_map`: Dictionary mapping paths to priority values
-- `gzip_output`: Whether to enable gzip compression (default: False)
+- `gzip`: Whether to enable gzip compression (default: False)
 
 ## Example Configuration
 
@@ -82,7 +82,7 @@ sitemap = SiteMap(
         "/": 1.0,
         "/about": 0.8,
     },
-    gzip_output=True,
+    gzip=True,
 )
 
 @sitemap.source

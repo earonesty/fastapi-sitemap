@@ -89,7 +89,7 @@ def main(argv=None):
     try:
         # generate
         sitemap = _load_sitemap(args.config, args.app, args.exclude_patterns, args.base_url)
-        sitemap.gzip_output = args.gzip
+        sitemap.gzip = args.gzip
         written = sitemap.generate(args.out)
         for path in written:
             print(path)

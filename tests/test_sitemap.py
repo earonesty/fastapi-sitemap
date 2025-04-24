@@ -21,7 +21,7 @@ def make_app(static_dir: Path, gzip: bool = False) -> FastAPI:
         app=app,
         base_url="https://example.com",
         static_dirs=[str(static_dir)],
-        gzip_output=gzip,
+        gzip=gzip,
     )
     sm.attach()
     return app
@@ -42,7 +42,14 @@ def test_sitemap_gzip():
     with tempfile.TemporaryDirectory() as tmp:
         app = make_app(Path(tmp), gzip=True)
         c = TestClient(app)
+
+        # Test main route
         resp = c.get("/sitemap.xml")
+        assert resp.status_code == 200
+        assert resp.headers["content-type"] == "application/xml"
+
+        # Test gzip route
+        resp = c.get("/sitemap.xml.gz")
         assert resp.status_code == 200
         assert resp.headers["content-type"] == "application/gzip"
 
@@ -57,7 +64,7 @@ def test_generate_files(tmp_path: Path):
 
 def test_generate_files_gzip(tmp_path: Path):
     app = FastAPI()
-    sm = SiteMap(app=app, base_url="https://example.com", gzip_output=True)
+    sm = SiteMap(app=app, base_url="https://example.com", gzip=True)
     files = sm.generate(tmp_path)
     assert (tmp_path / "sitemap.xml") in files
     assert (tmp_path / "sitemap.xml.gz") in files
