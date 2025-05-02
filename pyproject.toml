@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 packages = [{ include = "fastapi_sitemap" }]
 keywords = ["fastapi", "sitemap", "seo", "starlette", "asgi"]
-homepage = "https://github.com/q32/fastapi-sitemap"
+homepage = "https://github.com/earonesty/fastapi-sitemap"
 classifiers = [
   "Framework :: FastAPI",
   "Framework :: AsyncIO",
